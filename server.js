@@ -25,7 +25,9 @@ app.use((err, req, res, next) => {
     res.status(500).json({ error: 'Something went wrong on the server!' });
 });
 
-const PORT = 3000;
+// Use Render's dynamically injected PORT, or default to 3000 locally
+const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });
