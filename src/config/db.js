@@ -9,19 +9,22 @@ const db = new sqlite3.Database(dbPath, (err) => {
     } else {
         console.log('Connected to the SQLite database.');
         
-        // Enable Foreign Keys in SQLite
         db.run('PRAGMA foreign_keys = ON;');
 
-        // Initialize Users table
+        // 1. Create Users Table
         db.run(`CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             email TEXT UNIQUE NOT NULL,
             role TEXT CHECK(role IN ('Viewer', 'Analyst', 'Admin')) NOT NULL,
             status TEXT CHECK(status IN ('active', 'inactive')) DEFAULT 'active'
-        )`);
+        )`, () => {
+            // 2. SEED DATA: Automatically create a default Admin if the table is empty
+            db.run(`INSERT OR IGNORE INTO users (id, name, email, role) 
+                    VALUES (1, 'System Admin', 'admin@zorvyn.com', 'Admin')`);
+        });
 
-        // Initialize Financial Records table
+        // 3. Create Records Table
         db.run(`CREATE TABLE IF NOT EXISTS financial_records (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
